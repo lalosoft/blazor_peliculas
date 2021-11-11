@@ -1,0 +1,83 @@
+﻿@page "/peliculas/buscar"
+@inject IRepositorio repositorio
+
+<h3>Filtro Peliculas</h3>
+
+<div class="form-inline">
+    <div class="form-group mb-2">
+        <label for="titulo" class="sr-only">Título</label>
+        <input @bind-value="titulo" @bind-value:event="oninput"
+               @onkeypress="@((KeyboardEventArgs e) => TituloKeyPress(e))"
+               type="text" class="form-control" id="titulo" placeholder="Título de Pélicula" />
+    </div>
+    <div class="form-group mx-sm-3 mb-2">
+        <select class="form-control" @bind="generoSeleccionado">
+            <option value="0">Seleccione un genero--</option>
+            @foreach (var item in generos)
+            {
+                <option value="@item.Id">@item.Nombre</option>
+            }
+        </select>
+    </div>
+    <div class="form-group mx-sm-3 mb-2">
+        <input type="checkbox" class="form-check-input" id="estrenos" @bind="futurosEstrenos" />
+        <label class="form-check-label" for="estrenos">Futuros Estrenos</label>
+    </div>
+    <div class="form-group mx-sm-3 mb-2">
+        <input type="checkbox" class="form-check-input" id="cartelera" @bind="enCartelera" />
+        <label class="form-check-label" for="cartelera">En Cartelera</label>
+    </div>
+    <div class="form-group mx-sm-3 mb-2">
+        <input type="checkbox" class="form-check-input" id="masVotadas" @bind="masVotadas" />
+        <label class="form-check-label" for="masVotadas">Mas Votadas</label>
+    </div>
+
+    <button type="button" class="btn btn-primary mb-2 mx-sm-3" @onclick="CargarNuevasPeliculas">Filtrar</button>
+    <button type="button" class="btn btn-danger mb-2" @onclick="LimpiarOnClick">Limpiar</button>
+</div>
+
+<ListadoPeliculas Peliculas="Peliculas"/>
+
+
+@code {
+    private List<Pelicula> Peliculas;
+    string titulo = "";
+    string generoSeleccionado = "0";
+    private List<Genero> generos = new List<Genero>();
+    private bool futurosEstrenos = false;
+    private bool enCartelera = false;
+    private bool masVotadas = false;
+
+    protected override void OnInitialized()
+    {
+        Peliculas = repositorio.ObtenerPeliculas();
+    }
+
+    private void TituloKeyPress(KeyboardEventArgs e)
+    {
+        if(e.Key == "Enter")
+        {
+            CargarNuevasPeliculas();
+        }
+    }
+
+    private void CargarNuevasPeliculas()
+    {
+        Peliculas = repositorio.ObtenerPeliculas().Where(x => x.Titulo.ToLower().Contains(titulo.ToLower())).ToList();
+        Console.WriteLine($"Titulo: {titulo}");
+        Console.WriteLine($"Genero seleccionado: {generoSeleccionado}");
+        Console.WriteLine($"En cartelera: {enCartelera}");
+        Console.WriteLine($"Futuros estrenos: {futurosEstrenos}");
+        Console.WriteLine($"Mas votadas: {masVotadas}");
+    }
+
+    private void LimpiarOnClick()
+    {
+        Peliculas = repositorio.ObtenerPeliculas();
+        titulo = "";
+        generoSeleccionado = "0";
+        futurosEstrenos = false;
+        enCartelera = false;
+        masVotadas = false;
+    }
+}

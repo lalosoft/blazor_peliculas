@@ -1,0 +1,106 @@
+﻿<EditForm Model="Pelicula" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label>Titulo</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@Pelicula.Titulo" />
+            <ValidationMessage For="@(() => Pelicula.Titulo)" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>En cartelera</label>
+        <div>
+            <InputCheckbox @bind-Value="@Pelicula.EnCartelera" />
+            <ValidationMessage For="@(() => Pelicula.EnCartelera)" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Trailer</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@Pelicula.Trailer" />
+            <ValidationMessage For="@(() => Pelicula.Trailer)" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Fecha de lanzamiento</label>
+        <div>
+            <InputDate class="form-control" @bind-Value="@Pelicula.Lanzamiento" />
+            <ValidationMessage For="@(() => Pelicula.Lanzamiento)" />
+        </div>
+    </div>
+
+    <div class="form-group form-markdown">
+        <InputMarkdown @bind-Value="@Pelicula.Resumen"
+                       For="@(() => Pelicula.Resumen)"
+                       Label="Resumen" />
+    </div>
+
+    <div class="form-group">
+        <InputImg Label="Foto" ImgSeleccionada="ImagenSeleccionada" ImgURL="" />
+    </div>
+
+    <div class="form-group">
+        <label>Generos:</label>
+        <div>
+            <SelectorMultiple Seleccionados="Seleccionados" NoSeleccionados="NoSeleccionados" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Actores</label>
+        <div>
+            <SelectorMultipleTH Context="persona" SearchMethod="BuscarActores" ElementosSeleccionados="ActoresSeleccionados">
+                <MyListTemplate>
+                    @persona.Nombre
+                </MyListTemplate>
+                <MyResultTemplate>
+                    <img src="@persona.Foto" style="width: 50px"/>
+                    @persona.Nombre
+                </MyResultTemplate>
+            </SelectorMultipleTH>
+        </div>
+    </div>
+
+    <button class="btn btn-success" type="submit">Salvar Pelicula</button>
+</EditForm>
+
+@code {
+    [Parameter] public Pelicula Pelicula { get; set; }
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public List<Genero> GenerosSeleccionados { get; set; } = new List<Genero>();
+    [Parameter] public List<Genero> GenerosNoSeleccionados { get; set; } = new List<Genero>();
+    [Parameter] public List<Persona> ActoresSeleccionados { get; set; } = new List<Persona>();
+
+    private List<SelectorMultipleModel> Seleccionados = new List<SelectorMultipleModel>();
+    private List<SelectorMultipleModel> NoSeleccionados = new List<SelectorMultipleModel>();
+    private string posterTemporal;
+
+    protected override void OnInitialized()
+    {
+        Seleccionados = GenerosSeleccionados.Select(x => new SelectorMultipleModel(x.Id.ToString(), x.Nombre)).ToList();
+        NoSeleccionados = GenerosNoSeleccionados.Select(x => new SelectorMultipleModel(x.Id.ToString(), x.Nombre)).ToList();
+
+        if(!string.IsNullOrWhiteSpace(Pelicula.Poster))
+        {
+            posterTemporal = Pelicula.Poster;
+            Pelicula.Poster = null;
+        }
+    }
+
+    private void ImagenSeleccionada(string imgBase64)
+    {
+        Pelicula.Poster = imgBase64;
+    }
+
+    private async Task<IEnumerable<Persona>> BuscarActores(string searchText)
+    {
+        return new List<Persona>()
+        {
+            new Persona() { Id = 1, Nombre = "Nicole Kidman", Foto = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQq1NhCYTIRYSqfbr3jXldtgxqc_ioL7vTfLA&usqp=CAU"},
+            new Persona() { Id = 2, Nombre = "Sandra Bullock", Foto = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQijqyR9P_5EULcQbLr7ORAofey93b4-viMkg&usqp=CAU"}
+        };
+    }
+}
