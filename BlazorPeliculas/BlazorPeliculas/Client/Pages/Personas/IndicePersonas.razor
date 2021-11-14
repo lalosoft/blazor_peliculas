@@ -1,4 +1,5 @@
 ﻿@page "/personas"
+@inject IRepositorio repositorio
 
 <h3>Indice Personas</h3>
 
@@ -6,6 +7,37 @@
     <a class="btn btn-info" href="personas/crear">Crear Personas</a>
 </div>
 
-@code {
+<ListadoGenerico Listado="Personas">
+    <HayRegistrosCompleto>
+        <table class="table table-stripped">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Nombre</th>
+                </tr>
+            </thead>
+            <tbody>
+               @foreach (var item in Personas)
+                {
+                    <tr>
+                        <td>
+                            <a class="btn btn-success">Editar</a>
+                            <button class="btn btn-danger">Borrar</button>
+                        </td>
+                        <td>@item.Nombre</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </HayRegistrosCompleto>
+</ListadoGenerico>
 
+@code {
+    public List<Persona> Personas { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        var responseHttp = await repositorio.Get<List<Persona>>("api/personas");
+        Personas = responseHttp.Response;
+    }
 }

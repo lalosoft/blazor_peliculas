@@ -1,5 +1,6 @@
 ﻿using BlazorPeliculas.Shared.Entidades;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,10 @@ namespace BlazorPeliculas.Server.Controllers
         {
             this.context = context;
         }
+
+        [HttpGet]
+        public async Task<ActionResult<List<Genero>>> Get() =>
+            await context.Generos.ToListAsync();
 
         [HttpPost]
         public async Task<ActionResult<int>> Post(Genero genero)

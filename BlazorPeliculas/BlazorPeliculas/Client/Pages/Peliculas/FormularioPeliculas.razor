@@ -1,4 +1,4 @@
-﻿<EditForm Model="Pelicula" OnValidSubmit="OnValidSubmit">
+﻿<EditForm Model="Pelicula" OnValidSubmit="OnDataAnnotationsValidated">
     <DataAnnotationsValidator />
     <div class="form-group">
         <label>Titulo</label>
@@ -54,7 +54,7 @@
         <div>
             <SelectorMultipleTH Context="persona" SearchMethod="BuscarActores" ElementosSeleccionados="ActoresSeleccionados">
                 <MyListTemplate>
-                    @persona.Nombre
+                    @persona.Nombre / <input type="text" placeholder="Personaje" @bind="persona.Personaje"/>
                 </MyListTemplate>
                 <MyResultTemplate>
                     <img src="@persona.Foto" style="width: 50px"/>
@@ -102,5 +102,21 @@
             new Persona() { Id = 1, Nombre = "Nicole Kidman", Foto = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQq1NhCYTIRYSqfbr3jXldtgxqc_ioL7vTfLA&usqp=CAU"},
             new Persona() { Id = 2, Nombre = "Sandra Bullock", Foto = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQijqyR9P_5EULcQbLr7ORAofey93b4-viMkg&usqp=CAU"}
         };
+    }
+
+    private async Task OnDataAnnotationsValidated()
+    {
+        Pelicula.GenerosPelicula = Seleccionados
+                                   .Select(x => new GeneroPelicula { GeneroId = int.Parse(x.Llave) }).ToList();
+
+        Pelicula.PeliculasActor = ActoresSeleccionados
+                                  .Select(x => new PeliculaActor { PersonaId = x.Id, Personaje = x.Personaje }).ToList();
+
+        if(!string.IsNullOrWhiteSpace(Pelicula.Poster))
+        {
+            posterTemporal = null;
+        }
+
+        await OnValidSubmit.InvokeAsync(null);
     }
 }
