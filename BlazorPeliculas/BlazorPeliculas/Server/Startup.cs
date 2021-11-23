@@ -27,6 +27,7 @@ namespace BlazorPeliculas.Server
         {
             services.AddDbContext<ApplicationDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             //services.AddScoped<IAlmacenadorArchivos, AlmacenadorArchivosAS>();
+            services.AddAutoMapper(typeof(Startup));
             services.AddScoped<IAlmacenadorArchivos, AlmacenadorArchivosLocal>();
             services.AddHttpContextAccessor();
             services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);

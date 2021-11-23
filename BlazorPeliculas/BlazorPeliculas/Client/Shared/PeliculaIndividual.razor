@@ -1,17 +1,17 @@
 ﻿<div style="margin-right:2%; margin-bottom:10px; text-align:center">
-    <a href="@urlPelicula/@PeliculaMostrar.Id">
-        <img src="@PeliculaMostrar.Poster" alt="Poster" style="width: 225px; height: 300px"/>
+    <a href="@urlPelicula/@Pelicula.Id">
+        <img src="@Pelicula.Poster" alt="Poster" style="width: 225px; height: 300px"/>
     </a>
-    <p style="max-width: 225px; height: 44px; font-size: 15px; font-weight: bold"><a href="@urlPelicula/@PeliculaMostrar.Id">@PeliculaMostrar.TituloCortado</a></p>
+    <p style="max-width: 225px; height: 44px; font-size: 15px; font-weight: bold"><a href="@urlPelicula/@Pelicula.Id">@Pelicula.TituloCortado</a></p>
     <div>
-        <a class="btn btn-info">Editar</a>
-        <button type="button" class="btn btn-danger" @onclick="@(() => EliminarPeliculaEvent.InvokeAsync(PeliculaMostrar))">Borrar</button>
+        <a href="peliculas/editar/@Pelicula.Id" class="btn btn-info">Editar</a>
+        <button type="button" class="btn btn-danger" @onclick="@(() => EliminarPeliculaEvent.InvokeAsync(Pelicula))">Borrar</button>
     </div>
 </div>
 
 @code {
     [Parameter]
-    public Pelicula PeliculaMostrar { get; set; }
+    public Pelicula Pelicula { get; set; }
 
     [Parameter]
     public bool MostrarBotones { get; set; } = false;

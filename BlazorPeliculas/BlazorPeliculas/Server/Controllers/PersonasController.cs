@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 
 namespace BlazorPeliculas.Server.Controllers
 {
@@ -16,17 +17,27 @@ namespace BlazorPeliculas.Server.Controllers
         private readonly ApplicationDBContext context;
         private readonly IAlmacenadorArchivos almacenadorArchivos;
         private readonly string contenedor = "personas";
+        private readonly IMapper mapper;
 
-        public PersonasController(ApplicationDBContext context, IAlmacenadorArchivos almacenadorArchivos)
+        public PersonasController(ApplicationDBContext context, IAlmacenadorArchivos almacenadorArchivos, IMapper mapper)
         {
             this.context = context;
             this.almacenadorArchivos = almacenadorArchivos;
+            this.mapper = mapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Persona>>> Get()
         {
             return await context.Personas.ToListAsync();
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Persona>> Get(int id)
+        {
+            var persona = await context.Personas.FirstOrDefaultAsync(x => x.Id == id);
+            if(persona == null) return NotFound();
+            return persona;
         }
 
         [HttpGet("buscar/{textoBusqueda}")]
@@ -50,6 +61,23 @@ namespace BlazorPeliculas.Server.Controllers
             context.Add(persona);
             await context.SaveChangesAsync();
             return persona.Id;
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> Put(Persona persona)
+        {
+            var personaDB = await context.Personas.FirstOrDefaultAsync(x => x.Id == persona.Id);
+            if (personaDB == null) return NotFound();
+
+            personaDB = mapper.Map(persona, personaDB);
+            if (!string.IsNullOrWhiteSpace(persona.Foto))
+            {
+                var fotoImg = Convert.FromBase64String(persona.Foto);
+                personaDB.Foto = await almacenadorArchivos.EditarArchivo(fotoImg, "jpg", contenedor, personaDB.Foto);
+            }
+
+            await context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }
