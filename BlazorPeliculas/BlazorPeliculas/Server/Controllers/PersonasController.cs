@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using BlazorPeliculas.Shared.DTOs;
 
 namespace BlazorPeliculas.Server.Controllers
 {
@@ -27,9 +28,11 @@ namespace BlazorPeliculas.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Persona>>> Get()
+        public async Task<ActionResult<List<Persona>>> Get([FromQuery]Paginacion paginacion)
         {
-            return await context.Personas.ToListAsync();
+            var queryable = context.Personas.AsQueryable();
+            await HttpContext.InsertarParametrosPaginacionEnRespuesta(queryable, paginacion.CantidadRegistros);
+            return await queryable.Paginar(paginacion).ToListAsync();
         }
 
         [HttpGet("{id}")]
