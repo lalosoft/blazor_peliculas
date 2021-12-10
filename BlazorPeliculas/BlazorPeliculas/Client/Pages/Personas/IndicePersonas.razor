@@ -1,5 +1,6 @@
 ﻿@page "/personas"
 @inject IRepositorio repositorio
+@inject IMostrarMensajes mostrarMensajes
 
 <h3>Indice Personas</h3>
 
@@ -22,7 +23,7 @@
                     <tr>
                         <td>
                             <a href="personas/editar/@item.Id" class="btn btn-success">Editar</a>
-                            <button class="btn btn-danger">Borrar</button>
+                            <button @onclick="@(() => BorrarPersona(item))" class="btn btn-danger">Borrar</button>
                         </td>
                         <td>@item.Nombre</td>
                     </tr>
@@ -37,7 +38,25 @@
 
     protected async override Task OnInitializedAsync()
     {
+        await Cargar();
+    }
+
+    private async Task Cargar()
+    {
         var responseHttp = await repositorio.Get<List<Persona>>("api/personas");
         Personas = responseHttp.Response;
+    }
+
+    private async Task BorrarPersona(Persona persona)
+    {
+        var responseHttp = await repositorio.Delete($"api/personas/{persona.Id}");
+        if (responseHttp.Error)
+        {
+            await mostrarMensajes.MostrarMensajeError(await responseHttp.GetBody());
+        }
+        else
+        {
+            await Cargar();
+        }
     }
 }

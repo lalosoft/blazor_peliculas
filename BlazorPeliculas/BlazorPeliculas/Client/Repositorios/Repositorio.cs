@@ -67,6 +67,12 @@ namespace BlazorPeliculas.Client.Repositorios
             return new HttpResponseWrapper<object>(null, !responseHttp.IsSuccessStatusCode, responseHttp);
         }
 
+        public async Task<HttpResponseWrapper<object>> Delete(string url)
+        {
+            var responseHttp = await httpClient.DeleteAsync(url);
+            return new HttpResponseWrapper<object>(null, !responseHttp.IsSuccessStatusCode, responseHttp);
+        }
+
         private async Task<T> DeserealizarRespuesta<T>(HttpResponseMessage httpResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             var responseString = await httpResponse.Content.ReadAsStringAsync();

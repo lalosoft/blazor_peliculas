@@ -1,4 +1,6 @@
 ﻿@inject IJSRuntime js
+@inject IRepositorio repositorio
+@inject IMostrarMensajes mostrarMensajes
 
 <div style="display: flex; flex-wrap: wrap; align-items: center">
     <ListadoGenerico Listado="Peliculas">
@@ -19,14 +21,21 @@
 
     ConfirmacionComponent confirmacion;
 
-    async Task EliminarPelicula(Pelicula peli)
+    private async Task EliminarPelicula(Pelicula peli)
     {
         var confirmado = await js.Confirm($"¿Desea borrar la pelicula {peli.Titulo}?");
-
         if (confirmado)
         {
-            Peliculas.Remove(peli);
-            Console.WriteLine($"Eliminando la pelicula {peli.Titulo}");
+            var responseHttp = await repositorio.Delete($"api/peliculas/{peli.Id}");
+            if (responseHttp.Error)
+            {
+                await mostrarMensajes.MostrarMensajeError(await responseHttp.GetBody());
+            }
+            else
+            {
+                Peliculas.Remove(peli);
+            }
         }
+        
     }
 }
