@@ -34,7 +34,7 @@
         var enlaceAnterior = PaginaActual - 1;
         Enlaces.Add(new PaginasModel(enlaceAnterior, enlaceAnteriorHabilitada, "Anterior"));
 
-        for(int i = 1;i<PaginasTotales; i++)
+        for(int i = 1;i<=PaginasTotales; i++)
         {
             if( i >= PaginaActual - Radio && i <= PaginaActual + Radio)
             {

@@ -6,7 +6,7 @@
     <ListadoGenerico Listado="Peliculas">
         <HayRegistros Context="pelicula">
             <PeliculaIndividual Pelicula="pelicula"
-                                EliminarPeliculaEvent="EliminarPelicula" />
+                                EliminarPeliculaEvent="EliminarPelicula" @key="pelicula.Id"/>
         </HayRegistros>
     </ListadoGenerico>
 </div>
