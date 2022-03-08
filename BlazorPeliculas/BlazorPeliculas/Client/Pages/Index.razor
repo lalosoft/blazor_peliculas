@@ -2,6 +2,15 @@
 @page "/index"
 @inject IRepositorio repositorio
 
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <label>Estas autorizado, @context.User.Identity.Name</label>
+    </Authorized>
+    <NotAuthorized>
+        <label>No estas autorizado</label>
+    </NotAuthorized>
+</AuthorizeView>
+
 <div>
     <h3>En Cartelera</h3>
     <ListadoPeliculas Peliculas="EnCartelera"/>
